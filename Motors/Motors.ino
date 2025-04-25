@@ -58,8 +58,20 @@ String Flavor(){
 }
 
 
+int PUMPS(){
+  if(flavorChoice == 1) return pump1;
+  else if(flavorChoice == 2) return pump2;
+  else if(flavorChoice == 3) return pump3;
+  else if(flavorChoice == 4) return pump4;
+  else{
+    Flavor();
+  }
+}
+
+
 void loop() {
   String(flavorChoice) = Flavor();
+  int (pump) = PUMPS();
 
   Serial.print("How long would you like to mix in seconds: \n");
   delay(1000);
@@ -74,11 +86,11 @@ void loop() {
   Serial.println("Mixing " + String(flavorChoice) + " for " + String(pumpTime) + " seconds.\n");
   delay(1000);
 
-  digitalWrite(pump1, HIGH);
-  analogWrite(pump1, 255);
+  digitalWrite(pump, HIGH);
+  analogWrite(pump, 255);
 
   delay(pumpTime * 1000);
   
-  digitalWrite(pump1, HIGH);
-  analogWrite(pump1, 0);
+  digitalWrite(pump, HIGH);
+  analogWrite(pump, 0);
 }

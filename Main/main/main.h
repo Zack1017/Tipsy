@@ -10,4 +10,7 @@
 #define SEESAW_ADDR      0x49
 #define I2C_ADDRESS      0x3C  
 
+#define HANDSHAKE_REQUEST 0xA5
+#define HANDSHAKE_READY   0x55
+
 void sendData(char* Message);

@@ -6,6 +6,10 @@
 #define SCL_PIN 9
 #define BUFFER_SIZE 64
 
+#define HANDSHAKE_REQUEST 0xA5
+#define HANDSHAKE_READY   0x55
+#define HANDSHAKE_NOT_READY 0x00
+
 byte receiveBuffer[BUFFER_SIZE];
 int receivedLength = 0;
 volatile bool readyToReceive = true;

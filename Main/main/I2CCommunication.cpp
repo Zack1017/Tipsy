@@ -21,7 +21,7 @@ void handShake()
       uint8_t response = Wire1.read();
       if (response == HANDSHAKE_READY) 
       {
-        return true; // Handshake succeeded
+        Serial.print("Handshake Successful");
       }
     }
 }

@@ -8,11 +8,22 @@
 
 byte receiveBuffer[BUFFER_SIZE];
 int receivedLength = 0;
+volatile bool readyToReceive = true;
+volatile bool handshakeRequested = false;
+
 
 void receiveEvent(int numBytes) {
   if (numBytes > BUFFER_SIZE) {
     Serial.println("Write error: received more data than the buffer size");
     return;
+  }
+  while (Wire1.available()) 
+  {
+    uint8_t cmd = Wire1.read();
+    if (cmd == HANDSHAKE_REQUEST) 
+    {
+      handshakeRequested = true;
+    }
   }
 
   receivedLength = numBytes;
@@ -29,7 +40,21 @@ void receiveEvent(int numBytes) {
 }
 
 void requestEvent() {
-  Wire.write(receiveBuffer, receivedLength); // Only send what was received
+  //Wire.write(receiveBuffer, receivedLength); // Only send what was received
+  if (handshakeRequested) 
+  {
+    if (readyToReceive) 
+    {
+      Wire1.write(HANDSHAKE_READY);
+    } else 
+    {
+      Wire1.write(HANDSHAKE_NOT_READY);
+    }
+    handshakeRequested = false;
+  } else 
+  {
+    Wire1.write(HANDSHAKE_NOT_READY);
+  }
 }
 
 void setup() {

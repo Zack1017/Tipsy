@@ -8,4 +8,6 @@
 #define SS_SWITCH_RIGHT  5
 
 #define SEESAW_ADDR      0x49
-#define SLAVE_ADDR       0x3F
+#define I2C_ADDRESS      0x3C  
+
+void sendData(char* Message);

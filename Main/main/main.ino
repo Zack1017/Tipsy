@@ -11,7 +11,7 @@ void setup() {
 
   Wire1.begin();
 
-  delay(2000);
+  delay(4000);
   if (!ss.begin(SEESAW_ADDR)) {
     Serial.println("Couldn't find seesaw on Wire1 (QT port)");
     while (1) delay(10);
@@ -39,6 +39,9 @@ void setup() {
 
 void loop() 
 {
+  char Str[15] = "Test";
+  sendData(Str);
+
   if (!ss.digitalRead(SS_SWITCH_UP)) {
     Serial.println("UP pressed!");
   }

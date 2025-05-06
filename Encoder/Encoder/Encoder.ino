@@ -8,6 +8,8 @@
 #define SS_SWITCH_RIGHT  5
 
 #define SEESAW_ADDR      0x49
+#define SLAVE_ADDR       0x3F
+
 Adafruit_seesaw ss(&Wire1);  // Use Wire1 for QT/Qwiic port
 int32_t encoder_position;
 
@@ -25,6 +27,7 @@ void setup() {
     while (1) delay(10);
   }
   Serial.println("seesaw started");
+  Serial.println("Arduino Uno R4 as I2C Master");
 
   uint32_t version = ((ss.getVersion() >> 16) & 0xFFFF);
   if (version != 5740) {
@@ -50,7 +53,8 @@ void setup() {
 
 
 
-void loop() {
+void loop() 
+{
   if (!ss.digitalRead(SS_SWITCH_UP)) {
     Serial.println("UP pressed!");
   }
@@ -72,6 +76,23 @@ void loop() {
     Serial.println(new_position);
     encoder_position = new_position;
   }
+
+  String msg = "Hello ESP32!";
+  Wire1.beginTransmission(SLAVE_ADDR);
+  Wire1.write(msg.c_str());
+  Wire1.endTransmission();
+
+  delay(100);
+
+  // Request response from ESP32-S3
+  Wire1.requestFrom(SLAVE_ADDR, 32);
+  Serial.print("Received: ");
+  while (Wire1.available()) {
+    char c = Wire1.read();
+    Serial.print(c);
+  }
+  Serial.println();
+
   
   delay(10);
 }

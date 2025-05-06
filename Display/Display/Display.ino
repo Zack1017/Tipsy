@@ -105,7 +105,6 @@ void generateColorWheel(uint16_t *colorWheel) {
       g = uint8_t(127.5 * (sin(angle) + 1));
       b = uint8_t(255 - (r + g) / 2);
       uint16_t color = RGB565(r, g, b);
-      //delay(5);
 
       // Scale this pixel into 4 pixels in the full buffer
       for(int dy = 0; dy < 2; dy++) {

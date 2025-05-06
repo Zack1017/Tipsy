@@ -17,13 +17,9 @@ volatile bool handshakeRequested = false;
 
 
 void receiveEvent(int numBytes) {
-  if (numBytes > BUFFER_SIZE) {
-    Serial.println("Write error: received more data than the buffer size");
-    return;
-  }
-  while (Wire1.available()) 
+  while (Wire.available()) 
   {
-    uint8_t cmd = Wire1.read();
+    uint8_t cmd = Wire.read();
     if (cmd == HANDSHAKE_REQUEST) 
     {
       handshakeRequested = true;
@@ -49,15 +45,15 @@ void requestEvent() {
   {
     if (readyToReceive) 
     {
-      Wire1.write(HANDSHAKE_READY);
+      Wire.write(HANDSHAKE_READY);
     } else 
     {
-      Wire1.write(HANDSHAKE_NOT_READY);
+      Wire.write(HANDSHAKE_NOT_READY);
     }
     handshakeRequested = false;
   } else 
   {
-    Wire1.write(HANDSHAKE_NOT_READY);
+    Wire.write(HANDSHAKE_NOT_READY);
   }
 }
 

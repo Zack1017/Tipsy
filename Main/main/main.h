@@ -14,3 +14,4 @@
 #define HANDSHAKE_READY   0x55
 
 void sendData(char* Message);
+void handShake();

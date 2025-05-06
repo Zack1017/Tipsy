@@ -34,13 +34,14 @@ void setup() {
 
   ss.enableEncoderInterrupt();
   ss.setGPIOInterrupts((uint32_t)1 << SS_SWITCH_UP, 1);
-
+  handShake();
 }
 
 void loop() 
 {
+  
   char Str[15] = "Test";
-  sendData(Str);
+  //sendData(Str);
 
   if (!ss.digitalRead(SS_SWITCH_UP)) {
     Serial.println("UP pressed!");

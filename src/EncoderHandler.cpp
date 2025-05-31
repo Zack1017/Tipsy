@@ -21,13 +21,10 @@ EncoderHandler::EncoderHandler()
 
 void EncoderHandler::begin()
 {
-  if(!ss.begin(0x49))
+  if (!tryInitializeSeesaw()) 
   {
-    Serial.println("Seesaw not found!");
-    while(1);
+    Serial.println("Seesaw initialization failed. Halting.");
   }
-  Serial.println("Seesaw found!");
-  ss.setEncoderPosition(0);
   encoder_position = 0; 
 
   // Set GPIO pins as inputs with pullups
@@ -113,5 +110,36 @@ void EncoderHandler::checkButtonPresses() {
             lastPressTime[BTN_SELECT] = currentTime;
         }
     }
+}
+
+bool EncoderHandler::tryInitializeSeesaw() {
+    const int LED_PIN = 13;
+    const unsigned long retryDelay = 500;       // ms
+    const unsigned long maxWaitTime = 10000;    // ms (set to 0 for infinite retry)
+    unsigned long startTime = millis();
+    int retryCount = 0;
+
+    pinMode(LED_PIN, OUTPUT);
+
+    while (!ss.begin(ENCODER_ADDRESS)) {
+        digitalWrite(LED_PIN, !digitalRead(LED_PIN)); // Blink LED
+
+        if (retryCount % 5 == 0) {
+            Serial.println("Seesaw not found... retrying");
+        }
+
+        retryCount++;
+        delay(retryDelay);
+
+        if (maxWaitTime > 0 && millis() - startTime >= maxWaitTime) {
+            Serial.println("Seesaw init timed out.");
+            digitalWrite(LED_PIN, HIGH);
+            return false;
+        }
+    }
+
+    digitalWrite(LED_PIN, LOW);
+    Serial.println("Seesaw found!");
+    return true;
 }
 

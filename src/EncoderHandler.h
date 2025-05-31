@@ -9,7 +9,7 @@
 #define SS_SWITCH_DOWN   4
 #define SS_SWITCH_RIGHT  5
 
-#define SEESAW_ADDR      0x49
+#define ENCODER_ADDRESS      0x49
 
 enum ButtonIndex {
   BTN_UP = 0,
@@ -28,14 +28,17 @@ public:
   int32_t getPosition();
 
 private:
+  Adafruit_seesaw ss;
+
   static void interruptHandler(); //ISR
   void handleInterrupt();
-
   void checkEncoderChange();
   void checkButtonPresses();
 
+  bool tryInitializeSeesaw();
+
   static EncoderHandler* instance; // For static ISR access
-  Adafruit_seesaw ss;
+  
   volatile int32_t encoder_position;
   static constexpr unsigned long debounceDelay = 200; // milliseconds
   unsigned long lastPressTime[5]; // One for each button

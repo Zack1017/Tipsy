@@ -3,13 +3,15 @@
 
 #include <Adafruit_seesaw.h>
 
-#define SS_SWITCH_SELECT 1
-#define SS_SWITCH_UP     2
-#define SS_SWITCH_LEFT   3
-#define SS_SWITCH_DOWN   4
-#define SS_SWITCH_RIGHT  5
-
 #define ENCODER_ADDRESS      0x49
+
+enum SwitchID : uint8_t {
+  SS_SWITCH_SELECT = 1,
+  SS_SWITCH_UP     = 2,
+  SS_SWITCH_LEFT   = 3,
+  SS_SWITCH_DOWN   = 4,
+  SS_SWITCH_RIGHT  = 5
+};
 
 enum ButtonIndex {
   BTN_UP = 0,

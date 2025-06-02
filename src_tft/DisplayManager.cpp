@@ -50,39 +50,86 @@ void DisplayManager::begin()
 void DisplayManager::update() {
     unsigned long now = millis();
 
-    switch (state) {
+    switch (state) 
+    {
         case BOOTING:
-            if (lastDrawnState != BOOTING) {
-                drawBootScreen();
-                lastDrawnState = BOOTING;
+          if (lastDrawnState != BOOTING) 
+            {
+              drawBootScreen();
+              lastDrawnState = BOOTING;
             }
-            if (now - lastUpdateTime > 4000) {
-                state = WELCOME;
-                lastUpdateTime = now;
+          if (now - lastUpdateTime > 4000) 
+            {
+              state = WELCOME;
+              lastUpdateTime = now;
             }
-            break;
+        break;
 
         case WELCOME:
-            if (lastDrawnState != WELCOME) {
-                drawWelcomeScreen();
-                lastDrawnState = WELCOME;
+          if (lastDrawnState != WELCOME) 
+            {
+              drawWelcomeScreen();
+              lastDrawnState = WELCOME;
             }
-            if (now - lastUpdateTime > 15000) {
-                state = READY;
-                lastUpdateTime = now;
+          if (now - lastUpdateTime > 15000) 
+            {
+              state = READY;
+              lastUpdateTime = now;
             }
-            break;
+        break;
 
         case READY:
-            if (lastDrawnState != READY) {
-                gfx->fillScreen(BLACK);
-                gfx->setCursor(100, 100);
-                gfx->setTextColor(WHITE);
-                gfx->setTextSize(3);
-                gfx->println("Ready for action!");
-                lastDrawnState = READY;
+          if (lastDrawnState != READY) 
+            {
+              gfx->fillScreen(BLACK);
+              gfx->setCursor(200, gfx->height() / 2);
+              gfx->setTextSize(10);
+              gfx->setTextColor(WHITE);
+              gfx->println("Tipsy!");
+              delay(10);
+              lastDrawnState = READY;
+              state = MAIN_MENU;
             }
-            break;
+        break;
+
+        case MAIN_MENU:
+          if (lastDrawnState != MAIN_MENU) 
+            {
+              drawMainMenu();
+              lastDrawnState = MAIN_MENU;
+            }
+        break;
+
+        case DRINK_SELECT:
+          if (lastDrawnState != DRINK_SELECT) 
+            {
+              drawDrinkSelect();
+              lastDrawnState = DRINK_SELECT;
+            }
+        break;
+
+        case PREPARING_DRINK:
+          if (lastDrawnState != PREPARING_DRINK) 
+            {
+            drawPreparingDrink();
+            lastDrawnState = PREPARING_DRINK;
+            lastUpdateTime = millis();
+            }
+          // Auto-complete after 3s
+          if (millis() - lastUpdateTime > 3000) 
+            {
+              state = COMPLETE;
+              lastDrawnState = PREPARING_DRINK;
+            }
+        break;
+
+        case COMPLETE:
+          if (lastDrawnState != COMPLETE)
+            {
+              drawCompleteScreen();
+              lastDrawnState = COMPLETE;
+            }
+        break;
     }
 }
 
@@ -91,7 +138,7 @@ void DisplayManager::update() {
 void DisplayManager::drawBootScreen()
 {
   gfx->fillScreen(BLACK);
-  gfx->setCursor(120, gfx->height()/2 -20);
+  gfx->setCursor(250, gfx->height()/2);
   gfx->setTextSize(3);
   gfx->setTextColor(WHITE);
   gfx->println("Booting...");
@@ -116,6 +163,93 @@ void DisplayManager::drawWelcomeScreen()
   gfx->setTextSize(4);
   gfx->setTextColor(LIGHTGREY);
   gfx->println("Your robot bartender");
+}
+
+
+void DisplayManager::drawMainMenu() {
+    gfx->fillScreen(BLACK);
+    gfx->setTextSize(3);
+    gfx->setCursor(150, gfx->height() / 2 - 100);
+    gfx->setTextColor(WHITE);
+    gfx->println("Choose Your Category:");
+
+    const char* categories[] = { "Vodka Drinks", "Rum Drinks", "Special Mixes" };
+
+    for (int i = 0; i < 3; i++) {
+        gfx->setCursor(150, gfx->height() / 2 - 50 + i * 40);
+        gfx->setTextColor(i == menuSelectionIndex ? DARKGREY : LIGHTGREY);
+        gfx->print(i == menuSelectionIndex ? "> " : "  ");
+        gfx->println(categories[i]);
+    }
+}
+
+void DisplayManager::drawDrinkSelect() {
+    gfx->fillScreen(BLACK);
+    gfx->setTextSize(3);
+    
+    const char* header;
+    const char* drinks[3];
+
+    switch (selectedCategory) {
+        case CATEGORY_VODKA:
+            header = "Vodka Drinks:";
+            drinks[0] = "Vodka Lemonade";
+            drinks[1] = "Screwdriver";
+            drinks[2] = "Cosmo";
+            break;
+        case CATEGORY_RUM:
+            header = "Rum Drinks:";
+            drinks[0] = "Rum & Coke";
+            drinks[1] = "Mai Tai";
+            drinks[2] = "Dark & Stormy";
+            break;
+        case CATEGORY_SPECIAL:
+            header = "Special Mixes:";
+            drinks[0] = "Jungle Fizz";
+            drinks[1] = "Party Punch";
+            drinks[2] = "Blackout Mix";
+            break;
+        default:
+            return;
+    }
+
+    gfx->setCursor(50, 50);
+    gfx->setTextColor(WHITE);
+    gfx->println(header);
+
+    for (int i = 0; i < 3; i++) {
+        gfx->setCursor(70, 100 + i * 40);
+        gfx->setTextColor(i == menuSelectionIndex ? GREEN : DARKGREY);
+        gfx->print(i == menuSelectionIndex ? "> " : "  ");
+        gfx->println(drinks[i]);
+    }
+}
+
+void DisplayManager::drawPreparingDrink() {
+    gfx->fillScreen(BLACK);
+    gfx->setTextSize(3);
+    gfx->setTextColor(YELLOW);
+    gfx->setCursor(50, gfx->height() / 2 - 40);
+    gfx->println("Preparing your drink...");
+    
+    gfx->setTextColor(WHITE);
+    gfx->setCursor(50, gfx->height() / 2 + 10);
+    gfx->println("Please wait...");
+}
+
+void DisplayManager::drawCompleteScreen() {
+    gfx->fillScreen(BLACK);
+    gfx->setTextSize(3);
+    gfx->setTextColor(GREEN);
+    gfx->setCursor(60, gfx->height() / 2 - 40);
+    gfx->println("Drink Ready!");
+
+    gfx->setTextColor(WHITE);
+    gfx->setCursor(60, gfx->height() / 2 + 10);
+    gfx->print("Enjoy your ");
+    
+    // Simulate a name:
+    gfx->println("Vodka Lemonade");
 }
 
 
